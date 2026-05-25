@@ -1,0 +1,11 @@
+# Build artifacts
+bin/
+obj/
+publish/
+*.zip
+
+# Database & Runtime files
+*.db
+*.db-journal
+*.pdf
+appsettings*.json

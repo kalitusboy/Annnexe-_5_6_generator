@@ -1,0 +1,50 @@
+name: Build & Publish RuralHousingApp
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  release:
+    types: [created]
+
+jobs:
+  build-and-publish:
+    runs-on: windows-latest # مطلوب لأن التطبيق يعتمد على WinForms و System.Drawing.Common
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore NuGet Packages
+      run: dotnet restore RuralHousingApp.csproj
+
+    - name: Build Project
+      run: dotnet build RuralHousingApp.csproj --configuration Release --no-restore
+
+    - name: Publish for Windows x64
+      # إنشاء مجلد مستقل يحتوي على كل الملفات التنفيذية والمكتبات الأصلية
+      run: dotnet publish RuralHousingApp.csproj --configuration Release --runtime win-x64 --self-contained true -o ./publish
+
+    - name: Compress Output
+      run: Compress-Archive -Path ./publish/* -DestinationPath RuralHousingApp-Win64.zip
+
+    - name: Upload Build Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: RuralHousingApp-Win64
+        path: RuralHousingApp-Win64.zip
+        retention-days: 7
+
+    # خطوة اختيارية: رفع الملف تلقائياً عند إنشاء GitHub Release
+    - name: Attach to GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v1
+      with:
+        files: RuralHousingApp-Win64.zip
+        fail_on_unmatched_files: false
