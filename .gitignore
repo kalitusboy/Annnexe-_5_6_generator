@@ -1,0 +1,18 @@
+## .NET / C#
+obj/
+bin/
+*.user
+.vs/
+publish/
+*.suo
+*.userprefs
+
+## SQLite
+*.db
+*.db-wal
+*.db-shm
+
+## OS
+.DS_Store
+Thumbs.db
+desktop.ini

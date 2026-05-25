@@ -1,0 +1,157 @@
+<Window x:Class="HabitatRural.Views.ParametresDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="الإعدادات العامة"
+        Width="620" Height="640"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource BackgroundBrush}"
+        FlowDirection="RightToLeft">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}"
+                CornerRadius="8" Padding="16,12" Margin="0,0,0,14">
+            <TextBlock Text="⚙  الإعدادات العامة للتطبيق"
+                       Foreground="White" FontSize="15" FontWeight="Bold"
+                       FontFamily="Segoe UI, Arial"/>
+        </Border>
+
+        <!-- Commune / Daira / Wilaya -->
+        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+            <StackPanel>
+                <TextBlock Text="الجماعة والدائرة والولاية"
+                           FontWeight="Bold" FontSize="13"
+                           Foreground="{StaticResource PrimaryBrush}"
+                           Margin="0,0,0,12"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="البلدية (Commune)" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="TxtCommune" Style="{StaticResource FormTextBox}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="الدائرة (Daïra)" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="TxtDaira" Style="{StaticResource FormTextBox}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="الولاية (Wilaya)" Style="{StaticResource FormLabel}"/>
+                        <TextBox x:Name="TxtWilaya" Style="{StaticResource FormTextBox}"/>
+                    </StackPanel>
+                </Grid>
+                <Button Content="💾  حفظ الإعدادات" Style="{StaticResource SuccessButton}"
+                        Click="BtnSaveParams_Click" Margin="0,12,0,0"
+                        HorizontalAlignment="Right" Padding="14,7"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Engineers list -->
+        <Border Grid.Row="2" Style="{StaticResource CardBorder}" Margin="0,0,0,14">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="المهندسون / المتابعون (Ingénieurs)"
+                           FontWeight="Bold" FontSize="13"
+                           Foreground="{StaticResource PrimaryBrush}"
+                           Margin="0,0,0,12"/>
+
+                <!-- New engineer form -->
+                <Border Grid.Row="1" Background="#F5F7FA" CornerRadius="6"
+                        Padding="10" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="اللقب (Nom)" Style="{StaticResource FormLabel}" FontSize="11"/>
+                            <TextBox x:Name="TxtIngNom" Style="{StaticResource FormTextBox}" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="الاسم (Prénom)" Style="{StaticResource FormLabel}" FontSize="11"/>
+                            <TextBox x:Name="TxtIngPrenom" Style="{StaticResource FormTextBox}" FontSize="12"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="الصفة (Qualité)" Style="{StaticResource FormLabel}" FontSize="11"/>
+                            <TextBox x:Name="TxtIngQualite" Style="{StaticResource FormTextBox}"
+                                     FontSize="12" Text="Chargé du suivi à la subdivision"/>
+                        </StackPanel>
+                        <Button Grid.Column="6" Content="＋ إضافة"
+                                Style="{StaticResource PrimaryButton}"
+                                Click="BtnAddIngenieur_Click"
+                                VerticalAlignment="Bottom" Padding="10,6"/>
+                    </Grid>
+                </Border>
+
+                <!-- List -->
+                <DataGrid Grid.Row="2" x:Name="DgIngenieurs"
+                          AutoGenerateColumns="False"
+                          CanUserAddRows="False"
+                          CanUserDeleteRows="False"
+                          IsReadOnly="True"
+                          SelectionMode="Single"
+                          BorderThickness="1" BorderBrush="#E0E0E0"
+                          GridLinesVisibility="Horizontal"
+                          HeadersVisibility="Column"
+                          Background="White"
+                          RowHeight="36" ColumnHeaderHeight="32">
+                    <DataGrid.ColumnHeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                            <Setter Property="Background" Value="#E3F2FD"/>
+                            <Setter Property="Foreground" Value="#1565C0"/>
+                            <Setter Property="FontWeight" Value="SemiBold"/>
+                            <Setter Property="Padding" Value="8,0"/>
+                        </Style>
+                    </DataGrid.ColumnHeaderStyle>
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="اللقب والاسم"
+                                            Binding="{Binding NomComplet}" Width="*"/>
+                        <DataGridTextColumn Header="الصفة"
+                                            Binding="{Binding Qualite}" Width="*"/>
+                        <DataGridCheckBoxColumn Header="نشط"
+                                                Binding="{Binding Actif}" Width="55"/>
+                        <DataGridTemplateColumn Header="" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Button Content="🗑" Background="Transparent"
+                                                BorderThickness="0" FontSize="14" Cursor="Hand"
+                                                Click="BtnDeleteIngenieur_Click" Tag="{Binding}"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <!-- Close button -->
+        <Button Grid.Row="3" Content="✔  إغلاق"
+                Style="{StaticResource PrimaryButton}"
+                Click="BtnClose_Click" HorizontalAlignment="Left"
+                MinWidth="120"/>
+    </Grid>
+</Window>
