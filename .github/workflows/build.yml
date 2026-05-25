@@ -1,44 +1,70 @@
-name: Build HabitatRural
+name: .NET Core Desktop – HabitatRural
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main, master ]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
     runs-on: windows-latest
+
+    env:
+      Solution_Name: HabitatRural.sln
+      Project_Path: HabitatRural\HabitatRural.csproj
 
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-    - name: Setup .NET 8
+    # ── .NET 8 ────────────────────────────────────────────────────────────
+    - name: Install .NET 8
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '8.0.x'
+        dotnet-version: 8.0.x
 
+    # ── MSBuild (requis pour WPF) ─────────────────────────────────────────
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v2
+
+    # ── Restore ───────────────────────────────────────────────────────────
     - name: Restore
-      run: dotnet restore HabitatRural/HabitatRural.csproj
+      run: msbuild $env:Solution_Name /t:Restore /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
 
+    # ── Build ─────────────────────────────────────────────────────────────
     - name: Build
-      run: dotnet build HabitatRural/HabitatRural.csproj --no-restore -c Release
+      run: msbuild $env:Solution_Name /p:Configuration=$env:Configuration
+      env:
+        Configuration: ${{ matrix.configuration }}
 
-    - name: Publish (self-contained exe)
+    # ── Publish (Release only → exe autonome) ─────────────────────────────
+    - name: Publish self-contained exe
+      if: matrix.configuration == 'Release'
       run: >
-        dotnet publish HabitatRural/HabitatRural.csproj
+        dotnet publish $env:Project_Path
         -c Release
         -r win-x64
         --self-contained true
         -p:PublishSingleFile=true
         -p:IncludeNativeLibrariesForSelfExtract=true
-        -o ./publish
+        -o publish\HabitatRural
 
-    - name: Upload artifact
+    # ── Upload Artifact (Release only) ────────────────────────────────────
+    - name: Upload exe artifact
+      if: matrix.configuration == 'Release'
       uses: actions/upload-artifact@v4
       with:
         name: HabitatRural-win-x64
-        path: ./publish/HabitatRural.exe
-        retention-days: 30
+        path: publish\HabitatRural\HabitatRural.exe
+        retention-days: 7
+        
