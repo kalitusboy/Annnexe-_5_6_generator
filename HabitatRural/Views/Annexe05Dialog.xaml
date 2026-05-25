@@ -1,0 +1,157 @@
+<Window x:Class="HabitatRural.Views.Annexe05Dialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="الملحق 05 – طلب صرف مساعدة السكن الريفي"
+        Width="680" SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource BackgroundBrush}"
+        FlowDirection="RightToLeft">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Background="{StaticResource AccentBrush}"
+                CornerRadius="8" Padding="16,12" Margin="0,0,0,16">
+            <StackPanel>
+                <TextBlock Text="ANNEXE N° 05  –  طلب صرف مساعدة السكن الريفي"
+                           Foreground="White" FontSize="14" FontWeight="Bold"
+                           FontFamily="Segoe UI, Arial"/>
+                <TextBlock x:Name="TxtBeneficiaireInfo"
+                           Foreground="#FFE0B2" FontSize="12" Margin="0,4,0,0"
+                           FontFamily="Segoe UI, Arial"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Tranche -->
+        <Border Grid.Row="1" Style="{StaticResource CardBorder}" Margin="0,0,0,12">
+            <StackPanel>
+                <TextBlock Text="الشريحة المطلوبة" Style="{StaticResource FormLabel}" FontSize="14"/>
+                <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                    <RadioButton x:Name="RbTranche1" Content="الشريحة الأولى  (60% من المبلغ)"
+                                 GroupName="Tranche" IsChecked="True"
+                                 FontSize="13" Margin="0,0,30,0"
+                                 Checked="RbTranche_Checked"/>
+                    <RadioButton x:Name="RbTranche2" Content="الشريحة الثانية  (40% من المبلغ)"
+                                 GroupName="Tranche" FontSize="13"
+                                 Checked="RbTranche_Checked"/>
+                </StackPanel>
+                <!-- Amount display -->
+                <Border Background="#E3F2FD" CornerRadius="6" Padding="12,8" Margin="0,12,0,0">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="مبلغ الشريحة: " FontSize="13" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="TxtMontantCalcule" FontSize="14" FontWeight="Bold"
+                                   Foreground="#1565C0"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </Border>
+
+        <!-- Form fields -->
+        <Border Grid.Row="2" Style="{StaticResource CardBorder}" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Montant Tranche (manual override) -->
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,0,12">
+                    <TextBlock Text="مبلغ الشريحة بالأرقام (دج)" Style="{StaticResource FormLabel}"/>
+                    <TextBox x:Name="TxtMontantTranche" Style="{StaticResource FormTextBox}"
+                             TextChanged="TxtMontantTranche_TextChanged"/>
+                </StackPanel>
+
+                <!-- Montant en Lettres -->
+                <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                    <TextBlock Text="مبلغ الشريحة بالحروف" Style="{StaticResource FormLabel}"/>
+                    <TextBox x:Name="TxtMontantEnLettres" Style="{StaticResource FormTextBox}"/>
+                </StackPanel>
+
+                <!-- Numéro Compte -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,0,12">
+                    <TextBlock Text="رقم الحساب البنكي" Style="{StaticResource FormLabel}"/>
+                    <TextBox x:Name="TxtNumeroCompte" Style="{StaticResource FormTextBox}"/>
+                </StackPanel>
+
+                <!-- Banque -->
+                <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12">
+                    <TextBlock Text="البنك / الوكالة" Style="{StaticResource FormLabel}"/>
+                    <ComboBox x:Name="CbBanque" Style="{StaticResource FormComboBox}" IsEditable="True">
+                        <ComboBoxItem Content="BADR"/>
+                        <ComboBoxItem Content="BNA"/>
+                        <ComboBoxItem Content="CPA"/>
+                        <ComboBoxItem Content="BDL"/>
+                        <ComboBoxItem Content="CCP"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <!-- Lieu -->
+                <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,0,12">
+                    <TextBlock Text="المكان (Lieu)" Style="{StaticResource FormLabel}"/>
+                    <TextBox x:Name="TxtLieu" Style="{StaticResource FormTextBox}"
+                             Text="DEUX BASSINS"/>
+                </StackPanel>
+
+                <!-- Date Demande -->
+                <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,12">
+                    <TextBlock Text="تاريخ الطلب" Style="{StaticResource FormLabel}"/>
+                    <DatePicker x:Name="DpDateDemande"
+                                Style="{StaticResource FormDatePicker}"/>
+                </StackPanel>
+
+                <!-- Separator -->
+                <Separator Grid.Row="3" Grid.ColumnSpan="3" Margin="0,4,0,12"/>
+                <TextBlock Grid.Row="3" Grid.ColumnSpan="3"
+                           Text="⬇  استلام من طرف CNL  (اختياري)"
+                           FontWeight="SemiBold" FontSize="12"
+                           Margin="0,0,0,8" HorizontalAlignment="Right"/>
+
+                <!-- Reception -->
+                <StackPanel Grid.Row="4" Grid.Column="0" Margin="0,0,0,12">
+                    <TextBlock Text="اسم المستلم (CNL)" Style="{StaticResource FormLabel}"/>
+                    <TextBox x:Name="TxtReceptionNom" Style="{StaticResource FormTextBox}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="4" Grid.Column="2" Margin="0,0,0,12">
+                    <TextBlock Text="الصفة" Style="{StaticResource FormLabel}"/>
+                    <TextBox x:Name="TxtReceptionQualite" Style="{StaticResource FormTextBox}"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="5" Grid.Column="0" Margin="0,0,0,0">
+                    <TextBlock Text="تاريخ الاستلام" Style="{StaticResource FormLabel}"/>
+                    <DatePicker x:Name="DpDateReception"
+                                Style="{StaticResource FormDatePicker}"/>
+                </StackPanel>
+                <StackPanel Grid.Row="5" Grid.Column="2" VerticalAlignment="Bottom">
+                    <CheckBox x:Name="ChkEstRecu" Content="تم الاستلام من طرف CNL"
+                              FontSize="13"/>
+                </StackPanel>
+
+            </Grid>
+        </Border>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left">
+            <Button Content="💾  حفظ" Style="{StaticResource SuccessButton}"
+                    Click="BtnSave_Click" MinWidth="110" Margin="0,0,10,0"/>
+            <Button Content="🖨  معاينة وطباعة" Style="{StaticResource PrimaryButton}"
+                    Click="BtnPreview_Click" MinWidth="140" Margin="0,0,10,0"/>
+            <Button Content="✖  إلغاء" Style="{StaticResource SecondaryButton}"
+                    Click="BtnCancel_Click" MinWidth="90"/>
+        </StackPanel>
+    </Grid>
+</Window>

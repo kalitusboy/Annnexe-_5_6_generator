@@ -1,0 +1,370 @@
+<Window x:Class="HabitatRural.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="نظام إحصاء السكن الريفي 2026 – نعامة / حوضان"
+        Height="780" Width="1200"
+        MinHeight="600" MinWidth="900"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource BackgroundBrush}"
+        FlowDirection="RightToLeft">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="28"/>
+        </Grid.RowDefinitions>
+
+        <!-- ══ Top Bar ════════════════════════════════════════════════════════ -->
+        <Border Grid.Row="0" Background="{StaticResource PrimaryDarkBrush}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="20,0">
+                    <TextBlock Text="🏠" FontSize="24" VerticalAlignment="Center"
+                               Margin="0,0,10,0"/>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="نظام إحصاء السكن الريفي 2026"
+                                   Foreground="White" FontSize="16" FontWeight="Bold"
+                                   FontFamily="Segoe UI, Arial"/>
+                        <TextBlock Text="ولاية نعامة – قسم حوضان"
+                                   Foreground="#90CAF9" FontSize="11"
+                                   FontFamily="Segoe UI, Arial"/>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Grid.Column="1" Orientation="Horizontal"
+                            VerticalAlignment="Center" Margin="0,0,16,0">
+                    <Button Content="🔄  تحديث" Style="{StaticResource PrimaryButton}"
+                            Click="BtnRefresh_Click" Margin="0,0,8,0"/>
+                    <Button Content="📂  مجلد البيانات" Style="{StaticResource SecondaryButton}"
+                            Click="BtnOpenFolder_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ══ Main Content ═══════════════════════════════════════════════════ -->
+        <Grid Grid.Row="1" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="340" MinWidth="280"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ── Left Panel: Beneficiaires list ─────────────────────────── -->
+            <Border Grid.Column="0" Style="{StaticResource CardBorder}" Padding="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- List header -->
+                    <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}"
+                            CornerRadius="10,10,0,0" Padding="14,10">
+                        <TextBlock Text="قائمة المستفيدين"
+                                   Foreground="White" FontSize="14" FontWeight="Bold"
+                                   FontFamily="Segoe UI, Arial"/>
+                    </Border>
+
+                    <!-- Search box -->
+                    <Border Grid.Row="1" Padding="10,8" Background="#F5F7FA">
+                        <TextBox x:Name="TxtSearch"
+                                 Style="{StaticResource FormTextBox}"
+                                 TextChanged="TxtSearch_TextChanged">
+                            <TextBox.Resources>
+                                <Style TargetType="Border">
+                                    <Setter Property="CornerRadius" Value="6"/>
+                                </Style>
+                            </TextBox.Resources>
+                        </TextBox>
+                    </Border>
+
+                    <!-- Watermark on search -->
+                    <TextBlock Grid.Row="1" Text="🔍  بحث بالاسم أو الرمز..."
+                               Foreground="#BDBDBD" FontSize="12" IsHitTestVisible="False"
+                               Margin="22,15,0,0" VerticalAlignment="Top"
+                               FontFamily="Segoe UI, Arial">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Text, ElementName=TxtSearch}" Value="">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+
+                    <!-- List -->
+                    <ListBox x:Name="LstBeneficiaires"
+                             Grid.Row="2"
+                             SelectionChanged="LstBeneficiaires_SelectionChanged"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemContainerStyle>
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Padding" Value="12,10"/>
+                                <Setter Property="Cursor" Value="Hand"/>
+                                <Setter Property="BorderBrush" Value="#E0E0E0"/>
+                                <Setter Property="BorderThickness" Value="0,0,0,1"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="#E3F2FD"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="#F5F5F5"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding NomPrenom}"
+                                               FontWeight="SemiBold" FontSize="13"
+                                               FontFamily="Segoe UI, Arial"
+                                               TextTrimming="CharacterEllipsis"/>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
+                                        <TextBlock Text="{Binding Code}"
+                                                   Foreground="{StaticResource PrimaryBrush}"
+                                                   FontSize="11" FontFamily="Segoe UI"/>
+                                        <TextBlock Text="  |  " Foreground="#BDBDBD" FontSize="11"/>
+                                        <TextBlock Text="{Binding NumeroDecision}"
+                                                   Foreground="{StaticResource TextSecondaryBrush}"
+                                                   FontSize="11" FontFamily="Segoe UI"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <!-- List footer buttons -->
+                    <Border Grid.Row="3" Background="#F5F7FA"
+                            CornerRadius="0,0,10,10" Padding="10,8">
+                        <WrapPanel>
+                            <Button Content="＋  مستفيد جديد"
+                                    Style="{StaticResource SuccessButton}"
+                                    Click="BtnNewBeneficiaire_Click"
+                                    Padding="10,6" Margin="0,0,6,4"/>
+                            <Button Content="✏  تعديل"
+                                    Style="{StaticResource PrimaryButton}"
+                                    Click="BtnEditBeneficiaire_Click"
+                                    Padding="10,6" Margin="0,0,6,4"/>
+                            <Button Content="🗑  حذف"
+                                    Style="{StaticResource DangerButton}"
+                                    Click="BtnDeleteBeneficiaire_Click"
+                                    Padding="10,6" Margin="0,0,0,4"/>
+                        </WrapPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ── Right Panel: Documents ──────────────────────────────────── -->
+            <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- ── Annexe 05 section ──────────────────────────────────── -->
+                <Border Grid.Row="0" Background="{StaticResource AccentBrush}"
+                        CornerRadius="10,10,0,0" Padding="14,10">
+                    <DockPanel>
+                        <TextBlock Text="ANNEXE 05  –  طلبات صرف المساعدة"
+                                   Foreground="White" FontSize="13" FontWeight="Bold"
+                                   FontFamily="Segoe UI, Arial" VerticalAlignment="Center"/>
+                        <Button Content="＋  طلب جديد"
+                                Style="{StaticResource PrimaryButton}"
+                                Background="White" Foreground="{StaticResource AccentBrush}"
+                                Click="BtnNewAnnexe05_Click"
+                                HorizontalAlignment="Left"
+                                Padding="10,5" Margin="0"/>
+                    </DockPanel>
+                </Border>
+
+                <Border Grid.Row="1" Background="White"
+                        CornerRadius="0,0,10,10"
+                        BorderBrush="#E0E0E0" BorderThickness="1"
+                        Margin="0,0,0,12">
+                    <DataGrid x:Name="DgAnnexe05"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              Background="White"
+                              RowBackground="White"
+                              AlternatingRowBackground="#FAFAFA"
+                              BorderThickness="0"
+                              ColumnHeaderHeight="36"
+                              RowHeight="38">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#FFF3E0"/>
+                                <Setter Property="Foreground" Value="#E65100"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="10,0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="رقم الشريحة"
+                                                Binding="{Binding NumeroTranche}"
+                                                Width="90"/>
+                            <DataGridTextColumn Header="المبلغ (دج)"
+                                                Binding="{Binding MontantTranche, StringFormat='{}{0:N2}'}"
+                                                Width="120"/>
+                            <DataGridTextColumn Header="بالحروف"
+                                                Binding="{Binding MontantEnLettres}"
+                                                Width="*"/>
+                            <DataGridTextColumn Header="تاريخ الطلب"
+                                                Binding="{Binding DateDemande, StringFormat=dd/MM/yyyy}"
+                                                Width="100"/>
+                            <DataGridCheckBoxColumn Header="تم الاستلام"
+                                                    Binding="{Binding EstRecu}"
+                                                    Width="80"/>
+                            <DataGridTemplateColumn Header="إجراءات" Width="180">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="✏" ToolTip="تعديل"
+                                                    Click="BtnEditAnnexe05_Click"
+                                                    Tag="{Binding}"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand" Margin="4,0"/>
+                                            <Button Content="🖨" ToolTip="طباعة"
+                                                    Click="BtnPrintAnnexe05_Click"
+                                                    Tag="{Binding}"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand" Margin="4,0"/>
+                                            <Button Content="🗑" ToolTip="حذف"
+                                                    Click="BtnDeleteAnnexe05_Click"
+                                                    Tag="{Binding}"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand" Margin="4,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+
+                <!-- ── Annexe 06 section ──────────────────────────────────── -->
+                <Border Grid.Row="2" Background="{StaticResource PrimaryBrush}"
+                        CornerRadius="10,10,0,0" Padding="14,10">
+                    <DockPanel>
+                        <TextBlock Text="ANNEXE 06  –  محاضر المعاينة"
+                                   Foreground="White" FontSize="13" FontWeight="Bold"
+                                   FontFamily="Segoe UI, Arial" VerticalAlignment="Center"/>
+                        <Button Content="＋  محضر جديد"
+                                Style="{StaticResource PrimaryButton}"
+                                Background="White" Foreground="{StaticResource PrimaryBrush}"
+                                Click="BtnNewAnnexe06_Click"
+                                HorizontalAlignment="Left"
+                                Padding="10,5" Margin="0"/>
+                    </DockPanel>
+                </Border>
+
+                <Border Grid.Row="3" Background="White"
+                        CornerRadius="0,0,10,10"
+                        BorderBrush="#E0E0E0" BorderThickness="1">
+                    <DataGrid x:Name="DgAnnexe06"
+                              AutoGenerateColumns="False"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              IsReadOnly="True"
+                              SelectionMode="Single"
+                              GridLinesVisibility="Horizontal"
+                              HeadersVisibility="Column"
+                              Background="White"
+                              RowBackground="White"
+                              AlternatingRowBackground="#FAFAFA"
+                              BorderThickness="0"
+                              ColumnHeaderHeight="36"
+                              RowHeight="38">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="#E3F2FD"/>
+                                <Setter Property="Foreground" Value="#1565C0"/>
+                                <Setter Property="FontWeight" Value="SemiBold"/>
+                                <Setter Property="FontSize" Value="12"/>
+                                <Setter Property="Padding" Value="10,0"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="تاريخ المعاينة"
+                                                Binding="{Binding DateVisite, StringFormat=dd/MM/yyyy}"
+                                                Width="110"/>
+                            <DataGridTextColumn Header="رقم رخصة البناء"
+                                                Binding="{Binding NumeroPermis}"
+                                                Width="120"/>
+                            <DataGridTextColumn Header="رئيس القسم"
+                                                Binding="{Binding NomSubdivisionnaire}"
+                                                Width="*"/>
+                            <DataGridTextColumn Header="الشريحة 1"
+                                                Binding="{Binding Tranche1}"
+                                                Width="75"/>
+                            <DataGridTextColumn Header="الشريحة 2"
+                                                Binding="{Binding Tranche2}"
+                                                Width="75"/>
+                            <DataGridTemplateColumn Header="إجراءات" Width="180">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Button Content="✏" ToolTip="تعديل"
+                                                    Click="BtnEditAnnexe06_Click"
+                                                    Tag="{Binding}"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand" Margin="4,0"/>
+                                            <Button Content="🖨" ToolTip="طباعة"
+                                                    Click="BtnPrintAnnexe06_Click"
+                                                    Tag="{Binding}"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand" Margin="4,0"/>
+                                            <Button Content="🗑" ToolTip="حذف"
+                                                    Click="BtnDeleteAnnexe06_Click"
+                                                    Tag="{Binding}"
+                                                    Background="Transparent" BorderThickness="0"
+                                                    FontSize="16" Cursor="Hand" Margin="4,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Border>
+            </Grid>
+        </Grid>
+
+        <!-- ══ Status Bar ════════════════════════════════════════════════════ -->
+        <Border Grid.Row="2" Background="{StaticResource PrimaryDarkBrush}" Padding="12,0">
+            <DockPanel VerticalAlignment="Center">
+                <TextBlock x:Name="TxtStatus"
+                           Text="جاهز"
+                           Foreground="#90CAF9" FontSize="11"
+                           FontFamily="Segoe UI, Arial"
+                           VerticalAlignment="Center"/>
+                <TextBlock x:Name="TxtDbPath"
+                           Foreground="#546E7A" FontSize="10"
+                           FontFamily="Segoe UI"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

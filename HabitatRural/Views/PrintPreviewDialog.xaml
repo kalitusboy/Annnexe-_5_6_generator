@@ -1,0 +1,31 @@
+<Window x:Class="HabitatRural.Views.PrintPreviewDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="معاينة قبل الطباعة"
+        WindowState="Maximized"
+        Background="#F0F0F0"
+        FlowDirection="RightToLeft">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <Border Grid.Row="0" Background="#1565C0" Padding="10,5">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Button Content="🖨  طباعة" Click="BtnPrint_Click"
+                        Style="{StaticResource SuccessButton}"
+                        Margin="0,0,10,0" MinWidth="110"/>
+                <Button Content="✖  إغلاق" Click="BtnClose_Click"
+                        Style="{StaticResource SecondaryButton}"
+                        MinWidth="90"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Document viewer -->
+        <DocumentViewer x:Name="DocViewer"
+                        Grid.Row="1"
+                        Background="#616161"/>
+    </Grid>
+</Window>

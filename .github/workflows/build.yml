@@ -1,0 +1,44 @@
+name: Build HabitatRural
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x'
+
+    - name: Restore
+      run: dotnet restore HabitatRural/HabitatRural.csproj
+
+    - name: Build
+      run: dotnet build HabitatRural/HabitatRural.csproj --no-restore -c Release
+
+    - name: Publish (self-contained exe)
+      run: >
+        dotnet publish HabitatRural/HabitatRural.csproj
+        -c Release
+        -r win-x64
+        --self-contained true
+        -p:PublishSingleFile=true
+        -p:IncludeNativeLibrariesForSelfExtract=true
+        -o ./publish
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: HabitatRural-win-x64
+        path: ./publish/HabitatRural.exe
+        retention-days: 30
