@@ -281,10 +281,12 @@ public class DatabaseService
         cmd.Parameters.AddWithValue("@nc", d.NumeroCompte);
         cmd.Parameters.AddWithValue("@ba", d.BanqueAgence);
         cmd.Parameters.AddWithValue("@li", d.Lieu);
-        cmd.Parameters.AddWithValue("@dd", d.DateDemande.ToString("yyyy-MM-dd"));
+        // ✅ التصحيح: السماح بقيمة فارغة لتاريخ الطلب
+        cmd.Parameters.AddWithValue("@dd", d.DateDemande?.ToString("yyyy-MM-dd") ?? "");
         cmd.Parameters.AddWithValue("@er", d.EstRecu ? 1 : 0);
         cmd.Parameters.AddWithValue("@rn", d.ReceptionNomPrenom);
         cmd.Parameters.AddWithValue("@rq", d.ReceptionQualite);
+        // ✅ التصحيح: السماح بقيمة فارغة لتاريخ الاستلام (بالفعل كان صحيحاً لكن نؤكد)
         cmd.Parameters.AddWithValue("@dr", d.DateReception?.ToString("yyyy-MM-dd") ?? "");
         return Convert.ToInt32(cmd.ExecuteScalar());
     }
@@ -309,11 +311,13 @@ public class DatabaseService
         NumeroCompte = r["numero_compte"]?.ToString() ?? "",
         BanqueAgence = r["banque_agence"]?.ToString() ?? "BADR",
         Lieu = r["lieu"]?.ToString() ?? "DEUX BASSINS",
-        DateDemande = DateTime.TryParse(r["date_demande"]?.ToString(), out var dd) ? dd : DateTime.Today,
+        // ✅ التصحيح: إذا كانت القيمة فارغة في قاعدة البيانات، اجعل DateDemande = null
+        DateDemande = r["date_demande"] == DBNull.Value ? null : DateTime.Parse(r["date_demande"].ToString()!),
         EstRecu = r.GetInt32(r.GetOrdinal("est_recu")) == 1,
         ReceptionNomPrenom = r["reception_nom_prenom"]?.ToString() ?? "",
         ReceptionQualite = r["reception_qualite"]?.ToString() ?? "",
-        DateReception = DateTime.TryParse(r["date_reception"]?.ToString(), out var dr) ? dr : null,
+        // ✅ التصحيح: السماح بتاريـخ استلام فارغ
+        DateReception = r["date_reception"] == DBNull.Value ? null : DateTime.Parse(r["date_reception"].ToString()!),
         CreatedAt = DateTime.TryParse(r["created_at"]?.ToString(), out var ca) ? ca : DateTime.Now,
     };
 
@@ -432,16 +436,19 @@ public class DatabaseService
         cmd.Parameters.AddWithValue("@dl", pv.DirectionLogement);
         cmd.Parameters.AddWithValue("@da", pv.Daira);
         cmd.Parameters.AddWithValue("@co", pv.Commune);
-        cmd.Parameters.AddWithValue("@dv", pv.DateVisite.ToString("yyyy-MM-dd"));
+        // ✅ التصحيح: السماح بتاريخ معاينة فارغ
+        cmd.Parameters.AddWithValue("@dv", pv.DateVisite?.ToString("yyyy-MM-dd") ?? "");
         cmd.Parameters.AddWithValue("@fp", pv.FractionProjet);
         cmd.Parameters.AddWithValue("@np", pv.NumeroPermis);
-        cmd.Parameters.AddWithValue("@dp", pv.DatePermis.ToString("yyyy-MM-dd"));
+        // ✅ التصحيح: السماح بتاريخ رخصة بناء فارغ
+        cmd.Parameters.AddWithValue("@dp", pv.DatePermis?.ToString("yyyy-MM-dd") ?? "");
         cmd.Parameters.AddWithValue("@t1", pv.Tranche1 ? 1 : 0);
         cmd.Parameters.AddWithValue("@t2", pv.Tranche2 ? 1 : 0);
         cmd.Parameters.AddWithValue("@oc", pv.ObservationsComplementaires);
         cmd.Parameters.AddWithValue("@ns2", pv.NomSignataire);
         cmd.Parameters.AddWithValue("@li", pv.Lieu);
-        cmd.Parameters.AddWithValue("@dpv", pv.DatePV.ToString("yyyy-MM-dd"));
+        // ✅ التصحيح: السماح بتاريخ محضر فارغ
+        cmd.Parameters.AddWithValue("@dpv", pv.DatePV?.ToString("yyyy-MM-dd") ?? "");
     }
 
     private static ProcesVerbal ReadPV(SqliteDataReader r) => new()
@@ -452,16 +459,17 @@ public class DatabaseService
         DirectionLogement = r["direction_logement"]?.ToString() ?? "MEDEA",
         Daira = r["daira"]?.ToString() ?? "TABLAT",
         Commune = r["commune"]?.ToString() ?? "DEUX BASSINS",
-        DateVisite = DateTime.TryParse(r["date_visite"]?.ToString(), out var dv) ? dv : DateTime.Today,
+        // ✅ التصحيح: السماح بقراءة قيمة فارغة -> null
+        DateVisite = r["date_visite"] == DBNull.Value ? null : DateTime.Parse(r["date_visite"].ToString()!),
         FractionProjet = r["fraction_projet"]?.ToString() ?? "",
         NumeroPermis = r["numero_permis"]?.ToString() ?? "",
-        DatePermis = DateTime.TryParse(r["date_permis"]?.ToString(), out var dp) ? dp : DateTime.Today,
+        DatePermis = r["date_permis"] == DBNull.Value ? null : DateTime.Parse(r["date_permis"].ToString()!),
         Tranche1 = r.GetInt32(r.GetOrdinal("tranche1")) == 1,
         Tranche2 = r.GetInt32(r.GetOrdinal("tranche2")) == 1,
         ObservationsComplementaires = r["observations_complementaires"]?.ToString() ?? "",
         NomSignataire = r["nom_signataire"]?.ToString() ?? "",
         Lieu = r["lieu"]?.ToString() ?? "DEUX BASSINS",
-        DatePV = DateTime.TryParse(r["date_pv"]?.ToString(), out var dpv) ? dpv : DateTime.Today,
+        DatePV = r["date_pv"] == DBNull.Value ? null : DateTime.Parse(r["date_pv"].ToString()!),
         CreatedAt = DateTime.TryParse(r["created_at"]?.ToString(), out var ca) ? ca : DateTime.Now,
     };
 
@@ -580,5 +588,4 @@ public class DatabaseService
             cmd.ExecuteNonQuery();
         }
     }
-
 }
