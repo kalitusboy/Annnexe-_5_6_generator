@@ -2,9 +2,9 @@ name: .NET Core Desktop – HabitatRural
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "habitat-rural" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "habitat-rural" ]
   workflow_dispatch:
 
 jobs:
