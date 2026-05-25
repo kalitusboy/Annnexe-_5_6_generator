@@ -16,7 +16,8 @@ public static class WordExporter
         var b = d.Beneficiaire!;
         string dateTxt = d.DateDemande.HasValue
             ? d.DateDemande.Value.ToString("dd/MM/yyyy") : "_______________";
-        string montant = d.MontantTranche > 0 ? d.MontantTranche : d.MontantCalcule;
+        // ✅ التصحيح: تحويل المتغير إلى decimal بدلاً من string
+        decimal montant = d.MontantTranche > 0 ? d.MontantTranche : d.MontantCalcule;
         string montantLettres = string.IsNullOrEmpty(d.MontantEnLettres)
             ? NumberToWordsFr.Convert(montant) : d.MontantEnLettres;
 
